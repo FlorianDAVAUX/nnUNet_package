@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nnUNet_package"
+version = "0.1.0"
+description = "Package pour l'utilisation de nnUNet"
+readme = "README.md"
+authors = [
+    {name="Florian Davaux", email="florian.davaux@cpe.fr"}
+]
+license = {text = "MIT"}
+dependencies = [
+    "SimpleITK>=2.2.1",
+    "numpy": "1.26.4",
+    "blosc2": "2.5.1",
+    "nnunetv2": None,
+]
+requires-python = ">=3.9"
