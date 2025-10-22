@@ -1,0 +1,60 @@
+# LungSegmentation nnUNetv2 Prediction Script
+
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
+Un script Python pour exécuter facilement des prédictions de segmentation pulmonaire avec **nnUNetv2** sur des images médicales.  
+Téléchargement automatique des modèles, préparation des fichiers pour la prédiction et renommage des résultats inclus.
+
+---
+
+## 🚀 Fonctionnalités
+
+- Téléchargement et extraction automatique des modèles depuis un URL.
+- Préparation de `dataset.json` pour la prédiction nnUNet.
+- Conversion des images d’entrée en `.nrrd` si nécessaire.
+- Exécution de la prédiction avec affichage des logs.
+- Nettoyage automatique des fichiers temporaires.
+- Renommage automatique du fichier de prédiction final.
+
+---
+
+## 📦 Prérequis
+
+Avant de lancer le script, assurez-vous d’avoir installé et configuré les éléments suivants :
+
+
+```bash
+git clone https://github.com/FlorianDAVAUX/nnUNet_package.git
+cd nnUNet_package
+pip install -e .
+```
+
+
+---
+
+
+## ⚙️ Utilisation rapide
+
+| Option         | Description | Exemple |
+|----------------|-------------|---------|
+| `--mode`       | Mode de prédiction (`Invivo` ou `Exvivo`) | `--mode Invivo` |
+| `--structure`  | Structure à segmenter (`Parenchyma`, `Airways`, `Vascular`, `ParenchymaAirways`, `All`, `Lobes`) | `--structure Parenchyma` |
+| `--input`      | Chemin vers l’image d’entrée (.nii, .nii.gz, .mha, .nrrd) | `--input ~/data/scan_patient.nrrd` |
+| `--output`     | Dossier de sortie pour la prédiction (par défaut `prediction`) | `--output ~/predictions` |
+| `--models_dir` | Chemin pour stocker ou chercher les modèles | `--models_dir ~/models` |
+| `--name`       | Nom final du fichier de prédiction (sans extension) | `--name segmentation_parenchyme` |
+
+---
+
+
+### Exemple complet
+
+```bash
+nnunet_predict \
+    --mode Invivo \
+    --structure Parenchyma \
+    --input ~/data/scan_patient.nrrd \
+    --output ~/predictions \
+    --models_dir ~/models \
+    --name segmentation_parenchyme
