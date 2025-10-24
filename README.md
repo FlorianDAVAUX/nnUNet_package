@@ -1,23 +1,35 @@
-# LungSegmentation nnUNetv2 Prediction Script
+# 🫁 LungSegmentation — nnUNetv2 Prediction Package
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-Un script Python pour exécuter facilement des prédictions de segmentation pulmonaire avec **nnUNetv2** sur des images médicales.  
-Téléchargement automatique des modèles, préparation des fichiers pour la prédiction et renommage des résultats inclus.
+Un **package Python** permettant d’exécuter facilement des prédictions de segmentation pulmonaire avec **nnUNetv2**,  
+incluant le **téléchargement automatique des modèles**, la **préparation des fichiers d’entrée** et le **renommage des résultats**.  
+
+Ce package peut être utilisé :
+- soit **en ligne de commande** avec `nnunet_predict`
+- soit **directement en Python** en important la fonction `nnunet_predict`.
 
 ---
 
 ## 🚀 Fonctionnalités
 
-- Téléchargement et extraction automatique des modèles depuis un URL.
-- Préparation de `dataset.json` pour la prédiction nnUNet.
-- Conversion des images d’entrée en `.nrrd` si nécessaire.
-- Exécution de la prédiction avec affichage des logs.
-- Nettoyage automatique des fichiers temporaires.
-- Renommage automatique du fichier de prédiction final.
+- 🔽 Téléchargement et extraction automatique des modèles depuis une URL.
+- 🧩 Préparation du `dataset.json` pour la prédiction nnUNetv2.
+- 🧠 Conversion automatique des images d’entrée vers le format `.nrrd`.
+- ⚙️ Lancement direct de la prédiction avec gestion des folds.
+- 🧹 Nettoyage des fichiers temporaires générés par nnUNetv2.
+- 🏷️ Renommage automatique du fichier final de segmentation.
 
 ---
+
+## 📦 Installation
+
+```bash
+git clone https://github.com/FlorianDAVAUX/nnUNet_package.git
+cd nnUNet_package
+pip install -e .
+```
 
 ## 📦 Prérequis
 
@@ -29,7 +41,6 @@ git clone https://github.com/FlorianDAVAUX/nnUNet_package.git
 cd nnUNet_package
 pip install -e .
 ```
-
 
 ---
 
@@ -47,7 +58,6 @@ pip install -e .
 
 ---
 
-
 ### Exemple complet
 
 ```bash
@@ -58,3 +68,19 @@ nnunet_predict \
     --output ~/predictions \
     --models_dir ~/models \
     --name segmentation_parenchyme
+```
+---
+
+## ⚙️ Utilisation depuis un script python 
+```bash
+from nnUNet_package.main import run_nnunet_prediction
+
+run_nnunet_prediction(
+    mode,
+    structure,
+    input_path,
+    output,
+    models_dir,
+    name
+)
+```
