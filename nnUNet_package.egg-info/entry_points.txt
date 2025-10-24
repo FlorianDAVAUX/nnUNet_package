@@ -1,0 +1,2 @@
+[console_scripts]
+nnunet_predict = nnUNet_package.main:main

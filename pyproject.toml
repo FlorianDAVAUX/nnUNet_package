@@ -22,3 +22,7 @@ dependencies = [
 
 [project.scripts]
 nnunet_predict = "nnUNet_package.main:main"
+
+[tool.setuptools.packages.find]
+include = ["nnUNet_package*"]
+

@@ -1,0 +1,11 @@
+README.md
+pyproject.toml
+nnUNet_package/__init__.py
+nnUNet_package/main.py
+nnUNet_package/predict.py
+nnUNet_package.egg-info/PKG-INFO
+nnUNet_package.egg-info/SOURCES.txt
+nnUNet_package.egg-info/dependency_links.txt
+nnUNet_package.egg-info/entry_points.txt
+nnUNet_package.egg-info/requires.txt
+nnUNet_package.egg-info/top_level.txt
