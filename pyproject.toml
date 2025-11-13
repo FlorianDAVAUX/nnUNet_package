@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nnUNet_package"
-version = "0.1.0"
-description = "Package pour l'utilisation de nnUNet"
+version = "0.2.3"
+description = "Package pour l'utilisation de nnUNet avec 3D Slicer"
 readme = "README.md"
 authors = [
     { name = "Florian Davaux", email = "florian.davaux@cpe.fr" }
@@ -23,6 +23,12 @@ dependencies = [
 [project.scripts]
 nnunet_predict = "nnUNet_package.main:main"
 
-[tool.setuptools.packages.find]
-include = ["nnUNet_package*"]
+[project.urls]
+Homepage = "https://github.com/FlorianDAVAUX/nnUNet_package"
 
+[tool.setuptools.package-data]
+"nnUNet_package" = ["models.json", "*.py"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["nnUNet_package*"]

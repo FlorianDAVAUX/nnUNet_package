@@ -1,70 +1,96 @@
 {
-  "Invivo": {
-    "Parenchyma": {
-      "model_url": "https://github.com/FlorianDAVAUX/LungSegmentation/releases/download/ParenchymaInvivo/Parenchyma.zip",
-      "model_name": "Parenchyma",
-      "model_id": "001",
-      "configuration": "3d_fullres",
-      "num_classes": 1,
-      "fold": 0
+  "rabbit": {
+    "invivo": {
+      "parenchyma": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/ParenchymaInvivoRabbit/ParenchymaInvivoRabbit.zip",
+        "model_name": "ParenchymaInvivoRabbit",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 1,
+        "fold": 0
+      },
+      "airways": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/AirwaysInvivoRabbit/AirwaysInvivoRabbit.zip",
+        "model_name": "AirwaysInvivoRabbit",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 1,
+        "fold": 3
+      },
+      "vascular": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/VascularInvivoRabbit/VascularInvivoRabbit.zip",
+        "model_name": "VascularInvivoRabbit",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 1,
+        "fold": 1
+      },
+      "parenchymaairways": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/ParenchymaAirwaysInvivoRabbit/ParenchymaAirwaysInvivoRabbit.zip",
+        "model_name": "ParenchymaAirwaysInvivoRabbit",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 2,
+        "fold": 1
+      },
+      "all": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/AllInvivoRabbit/AllInvivoRabbit.zip",
+        "model_name": "AllInvivoRabbit",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 3,
+        "fold": 4
+      },
+      "lobes":{
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/LobesInvivoRabbit/LobesInvivoRabbit.zip",
+        "model_name": "LobesInvivoRabbit",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 6,
+        "fold": 2
+      }
     },
-    "Airways": {
-      "model_url": "https://github.com/FlorianDAVAUX/LungSegmentation/releases/download/AirwaysInvivo/Airways.zip",
-      "model_name": "Airways",
-      "model_id": "001",
-      "configuration": "3d_fullres",
-      "num_classes": 1,
-      "fold": 3
+    "exvivo": {
+      "parenchymaairways": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/ParenchymaAirwaysExvivoRabbit/ParenchymaAirwaysExvivoRabbit.zip",
+        "model_name": "ParenchymaAirwaysExvivoRabbit",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 2,
+        "fold": 4
+      },
+      "airways": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/AirwaysExvivoRabbit/AirwaysExvivoRabbit.zip",
+        "model_name": "AirwaysExvivoRabbit",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 1,
+        "fold": 3
+      }
     },
-    "Vascular": {
-      "model_url": "https://github.com/FlorianDAVAUX/LungSegmentation/releases/download/VascularInvivo/Vascular.zip",
-      "model_name": "Vascular",
-      "model_id": "001",
-      "configuration": "3d_fullres",
-      "num_classes": 1,
-      "fold": 1
-    },
-    "ParenchymaAirways": {
-      "model_url": "https://github.com/FlorianDAVAUX/LungSegmentation/releases/download/ParenchymaAirwaysInvivo/ParenchymaAirways.zip",
-      "model_name": "ParenchymaAirways",
-      "model_id": "001",
-      "configuration": "3d_fullres",
-      "num_classes": 2,
-      "fold": 1
-    },
-    "All": {
-      "model_url": "https://github.com/FlorianDAVAUX/LungSegmentation/releases/download/AllInvivo/All.zip",
-      "model_name": "All",
-      "model_id": "001",
-      "configuration": "3d_fullres",
-      "num_classes": 3,
-      "fold": 4
-    },
-    "Lobes":{
-      "model_url": "https://github.com/FlorianDAVAUX/LungSegmentation/releases/download/LobesInvivo/LobesInvivo.zip",
-      "model_name": "Lobes",
-      "model_id": "001",
-      "configuration": "3d_fullres",
-      "num_classes": 6,
-      "fold": 2
+    "axial": {
+      "all": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/AllAxialRabbit/AllAxialRabbit.zip",
+        "model_name": "AllAxialRabbit",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 3,
+        "fold": 2
+      }
     }
   },
-  "Exvivo": {
-    "ParenchymaAirways": {
-      "model_url": "https://github.com/FlorianDAVAUX/LungSegmentation/releases/download/AllExvivo/Exvivo.zip",
-      "model_name": "ParenchymaAirways",
-      "model_id": "001",
-      "configuration": "3d_fullres",
-      "num_classes": 2,
-      "fold": 4
-    },
-    "Airways": {
-      "model_url": "https://github.com/FlorianDAVAUX/SlicerLungSegmentation/releases/download/AirwaysExvivo/ExvivoAirways.zip",
-      "model_name": "Airways",
-      "model_id": "001",
-      "configuration": "3d_fullres",
-      "num_classes": 1,
-      "fold": 3
+  "pig": {
+    "axial": {
+      "parenchyma": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/ParenchymaAxialPig/ParenchymaAxialPig.zip",
+        "model_name": "ParenchymaAxialPig",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 1,
+        "fold": 0
+      }
     }
   }
 }
+
+
