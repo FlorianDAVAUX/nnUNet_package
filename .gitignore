@@ -1,2 +1,6 @@
-dist/
-nnUNet_package.egg-info/
+*
+!*.py
+!.gitignore
+!*.toml
+!*.md
+!nnUNet_package
