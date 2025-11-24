@@ -48,5 +48,5 @@ pip install -e .
 ### Full Example
 
 ``` bash
-nnunet_predict     --mode Invivo     --structure Parenchyma     --input ~/data/scan_patient.nrrd     --output ~/predictions     --models_dir ~/models     --name segmentation_parenchyma
+nnunet_predict --mode Invivo --structure Parenchyma --input ~/data/scan_patient.nrrd --output ~/predictions --models_dir ~/models --name segmentation_parenchyma
 ```
