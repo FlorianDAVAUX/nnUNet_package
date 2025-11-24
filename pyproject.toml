@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nnUNet_package"
-version = "0.2.3"
-description = "Package pour l'utilisation de nnUNet avec 3D Slicer"
+version = "0.2.4"
+description = "Package to use nnUNet on 3D Slicer"
 readme = "README.md"
 authors = [
     { name = "Florian Davaux", email = "florian.davaux@cpe.fr" }

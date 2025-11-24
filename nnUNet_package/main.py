@@ -2,14 +2,25 @@ import argparse
 from .predict import run_nnunet_prediction, rename_prediction_file
 
 def main():
-    parser = argparse.ArgumentParser(description="Prédiction pulmonaire avec nnUNetv2")
+    """
+    Main function for running the nnUNetv2 prediction script.
+
+    Runs the parser and calls the run_nnunet_prediction function with the parsed arguments.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+    parser = argparse.ArgumentParser(description="nnUNetv2 Prediction Script")
     parser.add_argument("--mode", default="invivo", choices=["invivo", "exvivo", "axial"])
     parser.add_argument("--structure", required=True, choices=["parenchyma", "airways", "vascular", "parenchymaairways", "all", "lobes"])
-    parser.add_argument("--input", required=True, help="Image d'entrée (.nii, .mha, .nrrd...)")
-    parser.add_argument("--output", default="prediction", help="Dossier de sortie")
-    parser.add_argument("--models_dir", required=True, help="Dossier pour stocker les modèles")
+    parser.add_argument("--input", required=True, help="Input image (.nii, .mha, .nrrd...)")
+    parser.add_argument("--output", default="prediction", help="Output directory")
+    parser.add_argument("--models_dir", required=True, help="Directory to store models")
     parser.add_argument("--animal", default="rabbit", choices=["rabbit", "pig"])
-    parser.add_argument("--name", default="prediction", help="Nom du fichier final")
+    parser.add_argument("--name", default="prediction", help="Final file name")
 
     args = parser.parse_args()
 

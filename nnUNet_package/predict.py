@@ -3,43 +3,54 @@ import shutil
 import torch
 import json
 import urllib.request
-from os.path import isdir
 import SimpleITK as sitk
 from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
-from nnunetv2.utilities.file_path_utilities import maybe_mkdir_p
 
 
-# ============================================================#
-#                       📦 CONTEXT                            #
-# ============================================================#
+############################################### GLOBAL CONTEXT FOR DATASET.JSON AND LABELS ##############################################
 
 GLOBAL_CONTEXT = {
     "dataset_json_path": None,
     "dataset_labels": None,
 }
 
-# ============================================================#
-#                       📦 UTILITAIRES                        #
-# ============================================================#
+############################################################### FUNCTIONS ###############################################################
 
-def nnunet_predict(i, o, m, f):
+def nnunet_predict(input_path, output_path, model_path, fold_id):
+    """
+    nnUNetv2 prediction function.
 
+    Args:
+        input_path (str): Path to the input image folder.
+        output_path (str): Path to the output folder for results.
+        model_path (str): Folder in which the trained model is. Must have subfolders fold_X for the different trainde folds.
+        fold_id (str): Specify the folds of the trained model that should be used for prediction. Default: (0, 1, 2, 3, 4).
+
+    Returns:
+        None
+    """
     disable_tta=False
 
-    # Si un gpu est disponible, on l'utilise
+    # If there is a GPU available, we use it
     if torch.cuda.is_available():
         device = torch.device('cuda')
     else:
         device = torch.device('cpu')
 
+    # Create a predictor object
     predictor = nnUNetPredictor(tile_step_size=0.5,
                                 use_gaussian=True,
                                 use_mirroring=not disable_tta,
                                 perform_everything_on_device=True,
                                 device=device,
                                 verbose=True)
-    predictor.initialize_from_trained_model_folder(m, f)
-    predictor.predict_from_files(i, o, save_probabilities=False,
+    
+    # Initialize and run prediction
+    predictor.initialize_from_trained_model_folder(model_path, fold_id)
+
+    # Run prediction
+    predictor.predict_from_files(input_path, output_path,
+                                 save_probabilities=False,
                                  overwrite=True,
                                  num_processes_preprocessing=3,
                                  num_processes_segmentation_export=3,
@@ -49,34 +60,52 @@ def nnunet_predict(i, o, m, f):
 
 
 def load_model_config(json_path):
+    """
+    Load the json configuration file from the downloaded models.
+
+    Args:
+        json_path (str): Path to the JSON configuration file.
+
+    Returns:
+        dict: Content of the JSON configuration file as a Python dictionary.
+    """
     with open(json_path, "r") as f:
         return json.load(f)
 
 
-def download_and_extract_model(model_url, model_name, default_dir=None):
-    """Télécharge et extrait le modèle si absent."""
+def download_and_extract_model(model_url, model_name, default_dir):
+    """
+    Download and extract the pretrained model if it does not already exist.
+
+    Args:
+        model_url (str): URL to download the model from.
+        model_name (str): Name of the model directory.
+        default_dir (str, optional): Directory to store the model. Defaults to current working directory.
+
+    Returns:
+        None
+    """
     model_path = os.path.join(default_dir, model_name)
     zip_path = os.path.join(default_dir, f"{model_name}.zip")
 
     if not os.path.exists(model_path):
-        print(f"Téléchargement de {model_name} depuis {model_url}...")
+        print(f"Downloading model '{model_name}' from {model_url}...")
         urllib.request.urlretrieve(model_url, zip_path)
-        print(f"Extraction du modèle dans {model_path}...")
         import zipfile
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(model_path)
-        print(f"Modèle extrait dans {model_path}")
+        print(f"Model extracted to {model_path}")
     else:
-        print(f"Le modèle '{model_name}' est déjà présent")
+        print(f"The model '{model_name}' is already present")
     
-    # Suppression du zip
+    # Remove the zip file
     if os.path.exists(zip_path):
         os.remove(zip_path)
 
-    # Recherche du dataset.json avec la fonction utilitaire
+    # Search for dataset.json using the utility function
     GLOBAL_CONTEXT["dataset_json_path"] = find_dataset_json(model_path)
 
-    # Charge les labels une seule fois
+    # Load labels only once
     with open(GLOBAL_CONTEXT["dataset_json_path"], "r") as f:
         dataset = json.load(f)
         raw_label_map = dataset.get("labels", {})
@@ -85,63 +114,64 @@ def download_and_extract_model(model_url, model_name, default_dir=None):
 
 def edit_dataset_json_for_prediction(input_image):
     """
-    Prépare le dataset.json pour la prédiction nnUNet.
+    Modify the dataset.json file for prediction with a single image.
 
     Args:
-        input_image (str): Chemin de l'image d'entrée
+        input_image (str): Path to the input image.
+
     Returns:
-        chemin du dossier imagesTs
+        str: Path to the created imagesTs directory.
     """
     dataset_json_path = GLOBAL_CONTEXT.get("dataset_json_path")
     if not dataset_json_path:
-        raise RuntimeError("dataset.json introuvable dans le contexte global.")
+        raise RuntimeError("dataset.json not found in the global context.")
 
     with open(dataset_json_path, "r") as f:
         dataset = json.load(f)
 
-    # Suppression des infos training et mise à jour du test
+    # Delete training info and set test info
     dataset.pop("training", None)
     dataset["numTraining"] = 0
     dataset["numTest"] = 1
 
+    # Create imagesTs directory, which is required by nnUNetv2 for the inference
     imagesTs_path = os.path.join(os.path.dirname(dataset_json_path), "imagesTs")
     os.makedirs(imagesTs_path, exist_ok=True)
     
     dst = os.path.join(imagesTs_path, "001_0000.nrrd")
 
-    # Supprime tout lien ou fichier existant, même brisé
+    # Remove any existing link or file, even if broken
     if os.path.lexists(dst):
         os.remove(dst)
 
     ext = os.path.splitext(input_image)[1].lower()
     if ext == ".nrrd":
-        # Crée le symlink uniquement pour un .nrrd
+        # Create the symlink only for a .nrrd
         shutil.copy(os.path.abspath(input_image), dst)
     else:
-        # Convertit tout autre format en .nrrd
+        # Convert any other format to .nrrd
         img = sitk.ReadImage(input_image)
         sitk.WriteImage(img, dst)
 
     dataset["test"] = [[f"./imagesTs/001_0000.nrrd"]]
 
-    # Écriture du dataset.json modifié
+    # Write the modified dataset.json
     with open(dataset_json_path, "w") as f:
         json.dump(dataset, f, indent=4)
 
     return imagesTs_path
 
 
-
 def rename_prediction_file(prediction_path, new_name):
     """
-    Renomme le fichier de prédiction avec le nom donné par l'utilisateur.
-    Exemple : 001.nrrd -> mon_nom.nrrd
+    Rename the prediction file from the nnUNetv2 output.
 
     Args:
-        prediction_path (str): Chemin du fichier de prédiction généré par nnUNet
-        new_name (str): Nouveau nom pour le fichier de prédiction (sans extension)
+        predicted_path (str): Path to the prediction file from nnUNetv2.
+        new_name (str): New name for the prediction file (without extension).
+
     Returns:
-        str: Nouveau chemin du fichier renommé
+        None
     """
     directory = os.path.dirname(prediction_path)
     new_path = os.path.join(directory, f"{new_name}.nrrd")
@@ -149,15 +179,23 @@ def rename_prediction_file(prediction_path, new_name):
     if os.path.exists(prediction_path):
         os.rename(prediction_path, new_path)
     else:
-        print("Fichier de prédiction introuvable :", prediction_path)
+        print("Prediction file not found:", prediction_path)
 
 
 def cleanup_prediction_files(output_path):
     """
-    Supprime les fichiers temporaires générés par nnUNetv2.
+    Clean up the prediction files generated by nnUNetv2.
+
+    Removes the following files from the output directory:
+    - dataset.json
+    - plans.json
+    - predict_from_raw_data_args.json
 
     Args:
-        output_path (str): Chemin du dossier de sortie contenant les fichiers à supprimer.
+        output_path (str): Path to the directory containing the prediction files.
+
+    Returns:
+        None
     """
     for fname in ["dataset.json", "plans.json", "predict_from_raw_data_args.json"]:
         fpath = os.path.join(output_path, fname)
@@ -166,67 +204,74 @@ def cleanup_prediction_files(output_path):
 
 def find_dataset_json(model_dir):
     """
-    Recherche récursivement le fichier dataset.json dans un dossier de modèle nnUNet.
+    Search for a dataset.json file in the given model directory.
 
     Args:
-        model_dir (str): Dossier racine du modèle téléchargé.
+        model_dir (str): Directory to search for the dataset.json file.
 
     Returns:
-        str: Chemin complet vers le dataset.json s'il est trouvé.
+        str: Path to the dataset.json file if found, otherwise raises a FileNotFoundError.
+
     Raises:
-        FileNotFoundError: Si aucun dataset.json n'est trouvé.
+        FileNotFoundError: If a dataset.json file is not found in the given directory.
     """
     for root, _, files in os.walk(model_dir):
         if "dataset.json" in files:
             return os.path.join(root, "dataset.json")
-    raise FileNotFoundError(f"Aucun dataset.json trouvé dans {model_dir}")
+    raise FileNotFoundError(f"dataset.json not found in {model_dir}")
     
 
 def run_nnunet_prediction(mode, structure, input_path, output_dir, models_dir, animal):
     """
-    Exécute la prédiction nnUNetv2 avec les paramètres donnés.
+    Runs the nnUNetv2 prediction script.
 
     Args:
-        mode (str): "Invivo" ou "Exvivo".
-        structure (str): "Parenchyma", "Airways", "Vascular", "ParenchymaAirways", "All", "Lobes".
-        input_path (str): Chemin vers l'image d'entrée (.nii, .mha, .nrrd...).
-        output_dir (str): Dossier de sortie pour la prédiction.
-        models_dir (str): Dossier pour stocker ou chercher les modèles.
-        name (str): Nom du fichier de sortie final (sans extension).
+        mode (str): Mode of prediction (`invivo`, `exvivo`, `axial`).
+        structure (str): Structure to segment (`parenchyma`, `airways`, `vascular`, `parenchymaairways`, `all`, `lobes`).
+        input_path (str): Path to the input image.
+        output_dir (str): Path to the output directory for results.
+        models_dir (str): Path to the directory where the models are stored.
+        animal (str): Animal to segment (`rabbit`, `pig`).
+
+    Returns:
+        str: Path to the prediction file.
+
+    Raises:
+        FileNotFoundError: If a dataset.json file is not found in the given directory.
     """
 
-    # Vérifications et création des dossiers
+    # Create directories if they do not exist for models and output
     os.makedirs(models_dir, exist_ok=True)
     os.makedirs(output_dir, exist_ok=True)
 
-    # Chargement de la configuration
+    # Load model configuration
     script_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(script_dir, "models.json")
     config = load_model_config(config_path)
     model_info = config[animal][mode][structure]
 
-    # Téléchargement ou vérification du modèle
+    # Download or verify the model
     download_and_extract_model(model_info["model_url"], model_info["model_name"], models_dir)
 
-    # Préparation du dataset.json et du dossier imagesTs
+    # Prepare dataset.json and imagesTs folder
     imagesTs_path = edit_dataset_json_for_prediction(input_path)
 
-    # Construction du chemin vers le modèle entraîné
+    # Construct the path to the trained model
     model_path = os.path.join(models_dir, model_info["model_name"])
     first = next((d for d in os.listdir(model_path) if os.path.isdir(os.path.join(model_path, d))), None)
     model_path = os.path.join(model_path, first)
     second = next((d for d in os.listdir(model_path) if os.path.isdir(os.path.join(model_path, d))), None)
     model_path = os.path.join(model_path, second)
 
-    folds = (model_info["fold"],)
+    fold_id = (model_info["fold"],)
 
-    # Exécution de la prédiction
-    nnunet_predict(i=imagesTs_path, o=output_dir, m=model_path, f=folds)
+    # Run prediction
+    nnunet_predict(imagesTs_path, output_dir, model_path, fold_id)
 
-    # Renommage du fichier de sortie
+    # Rename output file
     prediction_file = os.path.join(output_dir, "001.nrrd")
 
-    # Nettoyage des fichiers inutiles
+    # Clean up unnecessary files
     cleanup_prediction_files(output_dir)
 
     return prediction_file
