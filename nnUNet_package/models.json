@@ -89,6 +89,36 @@
         "num_classes": 1,
         "fold": 0
       }
+    },
+    "invivo":{
+      "lobes": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/LobesInvivoPig/LobesInvivoPig.zip",
+        "model_name": "LobesInvivoPig",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 6,
+        "fold": 4
+      },
+      "parenchyma": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/ParenchymaInvivoPig/ParenchymaInvivoPig.zip",
+        "model_name": "ParenchymaInvivoPig",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 1,
+        "fold": 4
+      }
+    }
+  },
+  "rat": {
+    "invivo": {
+      "parenchymaairwayskidneysheart": {
+        "model_url": "https://github.com/FlorianDAVAUX/nnUNet_package/releases/download/ParenchymaAirwaysKidneysHeartInvivoRat/ParenchymaAirwaysKidneysHeartInvivoRat.zip",
+        "model_name": "ParenchymaAirwaysKidneysHeartInvivoRat",
+        "model_id": "001",
+        "configuration": "3d_fullres",
+        "num_classes": 4,
+        "fold": 3
+      }
     }
   }
 }

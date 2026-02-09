@@ -19,7 +19,7 @@ def main():
     parser.add_argument("--input", required=True, help="Input image (.nii, .mha, .nrrd...)")
     parser.add_argument("--output", default="prediction", help="Output directory")
     parser.add_argument("--models_dir", required=True, help="Directory to store models")
-    parser.add_argument("--animal", default="rabbit", choices=["rabbit", "pig"])
+    parser.add_argument("--animal", default="rabbit", choices=["rabbit", "pig", "rat"])
     parser.add_argument("--name", default="prediction", help="Final file name")
 
     args = parser.parse_args()
